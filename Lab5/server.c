@@ -1,7 +1,12 @@
+/*
+ * Name: Thom Hemenway & Keon Sadatian
+ * Date: 10/5/15
+ * Lab 5 
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include <sys/socket.h>
 #include <netdb.h>
 #include "variables.h"
@@ -37,7 +42,7 @@ main(int argc, char *argv[])
     printf("-----------------------------------------------\n");
      // Processing loop
     
-    //readMessage(line);
+    readMessage(line);
      
      //sendMessage(line);
   }

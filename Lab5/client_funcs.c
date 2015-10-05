@@ -74,9 +74,11 @@ int lrm(char filename[])
 
 int readMessage(char *msg)
 {
-	// Send ENTIRE line to server
-  n = write(sock, msg, MAX);
-  printf("sent: %s\n", msg);
+	// keep reading line from server until EOS is received
+  while((n = read(sock, msg, MAX)))
+  {
+    printf("received: %s\n", msg);
+  }
 }
 
 int sendMessage(char msg[])

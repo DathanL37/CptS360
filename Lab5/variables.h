@@ -2,6 +2,9 @@
 #define VARIABLES_H
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <netdb.h>
 
 #define  MAX 256
 
@@ -24,5 +27,6 @@ int myRmdir(char *pathname);
 int myRm(char *pathname);
 int myGet(char *pathname);
 int myPut(char *pathname);
+int processCommand(char command[]);
 
 #endif

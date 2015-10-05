@@ -1,9 +1,4 @@
 #include "variables.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/socket.h>
-#include <netdb.h>
 
 int readMessage(char *line)
 {
@@ -16,15 +11,68 @@ int readMessage(char *line)
       close(newsock);
       break;
     }
+
+    printf("client said: %s\n", line);
+
+    //process command && respond
+    processCommand(line);
+  }
+}
+
+int processCommand(char command[])
+{
+  char *token = strtok(command, " ");
+  char cmd[64], path[64];
+  int r = 0, com = 0;
+
+  strcpy(cmd, token);
+  token = strtok(NULL, " ");
+  strcpy(path, token);
+
+  // figure out which command to run
+  if (strcmp(cmd, "mkdir") == 0)
+  {
+    myMkdir(path);
+  }
+  else if (strcmp(cmd, "rmdir") == 0)
+  {
+    myRmdir(path);
+  }
+  else if (strcmp(cmd, "get") == 0)
+  {
+    myGet(path);
+  }
+  else if (strcmp(cmd, "put") == 0)
+  {
+    myPut(path);
+  }
+  else if (strcmp(cmd, "pwd") == 0)
+  {
+    myPwd(path);
+  }
+  else if (strcmp(cmd, "ls") == 0)
+  {
+    myLs(path);
+  }
+  else if (strcmp(cmd, "cd") == 0)
+  {
+    myCd(path);
+  }
+  else if (strcmp(cmd, "rm") == 0)
+  {
+    myRm(path);
+  }
+  else
+  {
+    sendMessage("invalid command.");
   }
 }
 
 int sendMessage(char command[])
 {
-
-
   // send the echo line to client 
-  //n = write(newsock, line, MAX);
+  printf("sent: %s\n", command);
+  n = write(newsock, command, MAX);
 }
 
 // Server initialization code:
@@ -83,4 +131,44 @@ int serverInit(char *name)
    printf("5 : server is listening ....\n");
    listen(sock, 5);
    printf("===================== init done =======================\n");
+}
+
+int myPwd()
+{
+
+}
+
+int myLs(char *pathname)
+{
+
+}
+
+int myCd(char *pathname)
+{
+
+}
+
+int myMkdir(char *pathname)
+{
+
+}
+
+int myRmdir(char *pathname)
+{
+
+}
+
+int myRm(char *pathname)
+{
+
+}
+
+int myGet(char *pathname)
+{
+
+}
+
+int myPut(char *pathname)
+{
+
 }
