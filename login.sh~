@@ -1,0 +1,3 @@
+#!/bin/sh
+
+ssh -p 11337255 hemenway@cs360.eecs.wsu.edu

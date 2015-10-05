@@ -1,0 +1,6 @@
+#!/bin/sh
+awk '
+BEGIN {  }
+{ print $0}
+END { print " - DONE -" }
+'

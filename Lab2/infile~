@@ -1,0 +1,42 @@
+mkdir
+mkdir /
+mkdir asdf/ddfdfasdf/adsfadf/ad
+mkdir z
+mkdir z/a
+mkdir z/a/b
+mkdir y
+mkdir y/a
+mkdir y/a/b
+ls asdffgjgjf
+ls
+ls z
+ls y
+rmdir ffkfkfad
+rmdir 
+rmdir z
+rmdir z/a/b
+ls z/a
+cd
+ls
+cd lkasjdfl
+cd z
+pwd
+cd
+ls
+cd y/a/b
+pwd
+creat /y/a/b/f
+creat /y/a/b/ff
+creat /y/a/b/fff
+creat /y/a/b/ffff
+ls
+creat /file
+ls /
+rm
+rm nothing
+rm /file
+ls /
+rm f
+rm ff
+quit
+s
