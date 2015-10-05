@@ -1,5 +1,8 @@
 #include "client_funcs.h"
 
+// end of stream 
+const char EOS[] = "EOS";
+
 int clientInit(char *argv[])
 {
   printf("======= clinet init ==========\n");
@@ -43,6 +46,7 @@ int clientInit(char *argv[])
   printf("========= init done ==========\n");
 }
 
+// TODO: Keon's
 int lcat(char filename[])
 {
 	
@@ -59,25 +63,31 @@ int lcd(char filename[])
 {
 	
 }
+
+// TODO: Keon's
 int lmkdir(char filename[])
 {
 	
 }
+
+// TODO: Keon's
 int lrmdir(char filename[])
 {
 	
 }
 int lrm(char filename[])
 {
-	
+  	
 }
 
 int readMessage(char *msg)
 {
 	// keep reading line from server until EOS is received
-  while((n = read(sock, msg, MAX)))
+  n = read(sock, msg, MAX);
+  while(strcmp(msg, EOS))
   {
     printf("received: %s\n", msg);
+    n = read(sock, msg, MAX);
   }
 }
 

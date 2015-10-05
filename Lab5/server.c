@@ -3,12 +3,6 @@
  * Date: 10/5/15
  * Lab 5 
  */
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/socket.h>
-#include <netdb.h>
 #include "variables.h"
 
 main(int argc, char *argv[])
@@ -22,7 +16,6 @@ main(int argc, char *argv[])
     hostname = argv[1];
  
   serverInit(hostname); 
-
 
   // Try to accept a client request
   while(1)
@@ -40,10 +33,7 @@ main(int argc, char *argv[])
     printf("-----------------------------------------------\n");
     printf("        IP=%d  port=%d\n", inet_ntoa(client_addr.sin_addr.s_addr), ntohs(client_addr.sin_port));
     printf("-----------------------------------------------\n");
-     // Processing loop
     
     readMessage(line);
-     
-     //sendMessage(line);
   }
 }

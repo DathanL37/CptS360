@@ -1,5 +1,10 @@
 #include "variables.h"
 
+char *t1 = "xwrxwrxwr-------";
+char *t2 = "----------------";
+// end of stream 
+const char EOS[] = "EOS";
+
 int readMessage(char *line)
 {
 	while(1)
@@ -48,7 +53,7 @@ int processCommand(char command[])
   }
   else if (strcmp(cmd, "pwd") == 0)
   {
-    myPwd(path);
+    myPwd();
   }
   else if (strcmp(cmd, "ls") == 0)
   {
@@ -68,14 +73,19 @@ int processCommand(char command[])
   }
 }
 
-int sendMessage(char command[])
+int sendMessage(const char *line, ...)
 {
-  // send the echo line to client 
-  printf("sent: %s\n", command);
-  n = write(newsock, command, MAX);
-}
+  char message[MAX];
+  va_list args;
+  // init args with number of arguments
+  va_start(args, line);
+  vsprintf(message, line, args);
 
-// Server initialization code:
+  // send the echo line to client 
+  printf("sent: %s\n", message);
+  n = write(newsock, message, MAX);
+  va_end(args);
+}
 
 int serverInit(char *name)
 {
@@ -140,34 +150,123 @@ int myPwd()
 
 int myLs(char *pathname)
 {
+  struct stat mystat, *sp;
+  int k;
+  char name[1024], cwd[1024];
+
+  sp = &mystat;
+  if (k = lstat(pathname, sp) < 0){
+     sendMessage("no file found.\n");
+     return 0;
+  }
+  strcpy(name, pathname);
+
+  if (S_ISDIR(sp->st_mode))
+      ls_dir(name);
+  else
+      ls_file(name);
+}
+
+int ls_file(char *file)
+{
+  struct stat fstat, *sp;
+  int k, i;
+  char ftime[64], message[MAX];
+
+  sp = &fstat;
+  if((k = lstat(file, &fstat)) < 0)
+  {
+    sendMessage("ERROR: can't stat file.\n");
+    return 0;
+  }
+  
+  if ((sp->st_mode & 0xF000) == 0x8000)
+    message[0] = '-';
+  if ((sp->st_mode & 0xF000) == 0x4000)
+    message[0] = 'd';
+  if ((sp->st_mode & 0xF000) == 0xA000)
+    message[0] = 'l';
+
+  for (i=8; i >= 0; i--){
+    if (sp->st_mode & (1 << i))
+      message[9-i] = t1[i];
+    else
+      message[9-i] = t2[i];
+  }
+
+  printf("%4d ",sp->st_nlink);
+  printf("%4d ",sp->st_gid);
+  printf("%4d ",sp->st_uid);
+  printf("%8d ",sp->st_size);
+
+  // print time
+  strcpy(ftime, ctime(&sp->st_ctime));
+  ftime[strlen(ftime)-1] = 0;
+  printf("%s  ",ftime);
+
+  // print name
+  printf("%s", file);
+  printf("</p>"); 
+}
+
+int ls_dir(char *file)
+{
+  DIR *d = opendir(file);
+  struct dirent *dir;
+
+  if(d == NULL) 
+    sendMessage("couldn't open the directory.\n");
+  
+  while((dir = readdir(d)) != NULL)
+  {
+    ls_file(dir->d_name);
+  }
+  closedir(d);
 
 }
 
 int myCd(char *pathname)
 {
-
+  sendMessage("CDing to %s\n", pathname);
+  sendMessage(EOS);
 }
 
+// TODO: Keon's
 int myMkdir(char *pathname)
 {
-
+  if(mkdir(pathname, 777) == 0)
+  {
+    sendMessage("created successfully!");
+    sendMessage("");
+  }
 }
 
+// TODO: Keon's
 int myRmdir(char *pathname)
 {
-
+  if(rmdir(pathname) == 0)
+  {
+    sendMessage("removed dir successfully!");
+    sendMessage("");
+  }
 }
 
 int myRm(char *pathname)
 {
-
+  if(unlink(pathname) == 0)
+  {
+    sendMessage("removed file successfully!");
+    sendMessage("");
+  }
 }
 
+// TODO: Keon's
 int myGet(char *pathname)
 {
 
 }
 
+// TODO: Keon's
 int myPut(char *pathname)
 {
 
