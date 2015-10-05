@@ -31,8 +31,8 @@ int processCommand(char command[])
   int r = 0, com = 0;
 
   strcpy(cmd, token);
-  token = strtok(NULL, " ");
-  strcpy(path, token);
+  if((token = strtok(NULL, " ")) != NULL)
+    strcpy(path, token);
 
   // figure out which command to run
   if (strcmp(cmd, "mkdir") == 0)
@@ -82,8 +82,9 @@ int sendMessage(const char *line, ...)
   vsprintf(message, line, args);
 
   // send the echo line to client 
-  printf("sent: %s\n", message);
   n = write(newsock, message, MAX);
+  printf("sent: %s\n", message);
+
   va_end(args);
 }
 
@@ -145,7 +146,11 @@ int serverInit(char *name)
 
 int myPwd()
 {
+  char cwd[128];
+  getcwd(cwd, 128);
 
+  sendMessage("%s\n", cwd);
+  sendMessage(EOS);
 }
 
 int myLs(char *pathname)
