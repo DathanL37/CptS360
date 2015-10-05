@@ -1,0 +1,7 @@
+#!/bin/sh
+
+gcc -w -m32 lab1.c
+clear
+
+./a.out one two three > outfile
+cat outfile

@@ -1,0 +1,79 @@
+enter help to get a list of commands.
+ > mkdir
+   ERROR: no path name
+ > mkdir /
+ > mkdir asdf/ddfdfasdf/adsfadf/ad
+   ERROR: no pathname exists.
+ > mkdir z
+ > mkdir z/a
+ > mkdir z/a/b
+ > mkdir y
+ > mkdir y/a
+ > mkdir y/a/b
+ > ls asdffgjgjf
+   ERROR: no pathname exists.
+ > ls
+   D	z
+   D	y
+ > ls z
+   D	a
+ > ls y
+   D	a
+ > rmdir ffkfkfad
+   ERROR: directory not found.
+ > rmdir 
+   ERROR: no path name
+ > rmdir z
+   ERROR: directory not empty.
+ > rmdir z/a/b
+ > ls z/a
+ > cd
+ > ls
+   D	z
+   D	y
+ > cd lkasjdfl
+   ERROR: no pathname exists.
+ > cd z
+ > pwd
+   /z/
+ > cd
+ > ls
+   D	z
+   D	y
+ > cd y/a/b
+ > pwd
+   /y/a/b/
+ > mkdir /root
+ > ls /
+   D	z
+   D	y
+   D	root
+ > creat /y/a/b/f
+ > creat /y/a/b/ff
+ > creat /y/a/b/fff
+ > creat /y/a/b/ffff
+ > ls
+   F	f
+   F	ff
+   F	fff
+   F	ffff
+ > creat /file
+ > ls /
+   D	z
+   D	y
+   D	root
+   F	file
+ > rm
+   ERROR: no pathname.
+ > rm nothing
+   ERROR: directory not found.
+ > rm /file
+ > ls /
+   D	z
+   D	y
+   D	root
+ > rm f
+ > rm ff
+ > quit
+Enter file name: saving s...
+Exiting...
