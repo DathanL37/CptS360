@@ -27,7 +27,7 @@ int readMessage(char *line)
 int processCommand(char command[])
 {
   char *token = strtok(command, " ");
-  char cmd[64], path[64];
+  char cmd[64], path[64] = {0};
   int r = 0, com = 0;
 
   strcpy(cmd, token);
@@ -71,6 +71,8 @@ int processCommand(char command[])
   {
     sendMessage("invalid command.");
   }
+  // end of stream
+  sendMessage(EOS);
 }
 
 int sendMessage(const char *line, ...)
@@ -83,6 +85,7 @@ int sendMessage(const char *line, ...)
 
   // send the echo line to client 
   n = write(newsock, message, MAX);
+  // DEBUG:
   printf("sent: %s\n", message);
 
   va_end(args);
@@ -150,14 +153,21 @@ int myPwd()
   getcwd(cwd, 128);
 
   sendMessage("%s\n", cwd);
-  sendMessage(EOS);
 }
 
-int myLs(char *pathname)
+int myLs(char pathname[])
 {
   struct stat mystat, *sp;
   int k;
-  char name[1024], cwd[1024];
+  char name[1024], cwd[128];
+
+  printf("arg is %s\n", pathname);
+  if(pathname == NULL || strcmp(pathname, "") == 0)
+  {
+    getcwd(cwd, 128);
+    printf("using %s instead\n", cwd);
+    strcpy(pathname, cwd);
+  }
 
   sp = &mystat;
   if (k = lstat(pathname, sp) < 0){
@@ -176,7 +186,7 @@ int ls_file(char *file)
 {
   struct stat fstat, *sp;
   int k, i;
-  char ftime[64], message[MAX];
+  char ftime[64];
 
   sp = &fstat;
   if((k = lstat(file, &fstat)) < 0)
@@ -186,32 +196,31 @@ int ls_file(char *file)
   }
   
   if ((sp->st_mode & 0xF000) == 0x8000)
-    message[0] = '-';
+    sendMessage("-");
   if ((sp->st_mode & 0xF000) == 0x4000)
-    message[0] = 'd';
+    sendMessage("d");
   if ((sp->st_mode & 0xF000) == 0xA000)
-    message[0] = 'l';
+    sendMessage("l");
 
   for (i=8; i >= 0; i--){
     if (sp->st_mode & (1 << i))
-      message[9-i] = t1[i];
+      sendMessage("%c", t1[i]);
     else
-      message[9-i] = t2[i];
+      sendMessage("%c", t2[i]);
   }
 
-  printf("%4d ",sp->st_nlink);
-  printf("%4d ",sp->st_gid);
-  printf("%4d ",sp->st_uid);
-  printf("%8d ",sp->st_size);
+  sendMessage("%4d ",sp->st_nlink);
+  sendMessage("%4d ",sp->st_gid);
+  sendMessage("%4d ",sp->st_uid);
+  sendMessage("%8d ",sp->st_size);
 
   // print time
   strcpy(ftime, ctime(&sp->st_ctime));
   ftime[strlen(ftime)-1] = 0;
-  printf("%s  ",ftime);
+  sendMessage("%s ",ftime);
 
   // print name
-  printf("%s", file);
-  printf("</p>"); 
+  sendMessage("%s\n", file);
 }
 
 int ls_dir(char *file)
@@ -233,7 +242,6 @@ int ls_dir(char *file)
 int myCd(char *pathname)
 {
   sendMessage("CDing to %s\n", pathname);
-  sendMessage(EOS);
 }
 
 // TODO: Keon's
@@ -242,7 +250,6 @@ int myMkdir(char *pathname)
   if(mkdir(pathname, 777) == 0)
   {
     sendMessage("created successfully!");
-    sendMessage("");
   }
 }
 
@@ -252,7 +259,6 @@ int myRmdir(char *pathname)
   if(rmdir(pathname) == 0)
   {
     sendMessage("removed dir successfully!");
-    sendMessage("");
   }
 }
 
@@ -261,7 +267,6 @@ int myRm(char *pathname)
   if(unlink(pathname) == 0)
   {
     sendMessage("removed file successfully!");
-    sendMessage("");
   }
 }
 

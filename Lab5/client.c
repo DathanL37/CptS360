@@ -33,7 +33,13 @@ main(int argc, char *argv[ ])
 
 int processCommand(char line[])
 {
-  if (line[0] == 'l')
+  char copy[128];
+  strcpy(copy, line);
+  char *t = strtok(copy, " ");
+  char cmd[64];
+  strcpy(cmd, t);
+
+  if (line[0] == 'l' && strcmp(cmd, "ls"))
   { // local command
     char *token = strtok(line, " ");
     char  command[64], path[64];
@@ -47,9 +53,6 @@ int processCommand(char line[])
   { // server command
     sendMessage(line);
     readMessage(line);
-
-    // display message
-
   }
 }
 

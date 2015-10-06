@@ -86,7 +86,7 @@ int readMessage(char *msg)
   n = read(sock, msg, MAX);
   while(strcmp(msg, EOS))
   {
-    printf("received: %s\n", msg);
+    printf("%s", msg);
     n = read(sock, msg, MAX);
   }
 }
