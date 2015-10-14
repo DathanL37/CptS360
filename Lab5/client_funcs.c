@@ -1,5 +1,7 @@
 #include "client_funcs.h"
 
+char *t1 = "xwrxwrxwr-------";
+char *t2 = "----------------";
 // end of stream 
 const char EOS[] = "EOS";
 
@@ -51,17 +53,102 @@ int lcat(char filename[])
 {
 	
 }
-int lpwd(char filename[])
+
+int lpwd()
 {
-	
+	char cwd[128];
+
+  getcwd(cwd, 128);
+
+  printf("%s\n", cwd);
 }
-int lls(char filename[])
+int lls(char pathname[])
 {
-	
+  struct stat mystat, *sp;
+  int k;
+  char name[1024], cwd[128];
+
+  if(pathname == NULL || strcmp(pathname, "") == 0)
+  {
+    getcwd(cwd, 128);
+    strcpy(pathname, cwd);
+  }
+
+  sp = &mystat;
+  if (k = lstat(pathname, sp) < 0){
+     printf("no file found.\n");
+     return 0;
+  }
+  strcpy(name, pathname);
+
+  if (S_ISDIR(sp->st_mode))
+      ls_dir(name);
+  else
+      ls_file(name);
+}
+
+int ls_file(char *file)
+{
+  printf("LSing %s\n", file);
+  struct stat fstat, *sp;
+  int k, i;
+  char ftime[64];
+
+  sp = &fstat;
+  if((k = lstat(file, &fstat)) < 0)
+  {
+    printf("ERROR: can't stat %s\n", file);
+    return 0;
+  }
+  
+  if ((sp->st_mode & 0xF000) == 0x8000)
+    printf("-");
+  if ((sp->st_mode & 0xF000) == 0x4000)
+    printf("d");
+  if ((sp->st_mode & 0xF000) == 0xA000)
+    printf("l");
+
+  for (i=8; i >= 0; i--){
+    if (sp->st_mode & (1 << i))
+      printf("%c", t1[i]);
+    else
+      printf("%c", t2[i]);
+  }
+
+  printf("%4d ",sp->st_nlink);
+  printf("%4d ",sp->st_gid);
+  printf("%4d ",sp->st_uid);
+  printf("%8d ",sp->st_size);
+
+  // print time
+  strcpy(ftime, ctime(&sp->st_ctime));
+  ftime[strlen(ftime)-1] = 0;
+  printf("%s ",ftime);
+
+  // print name
+  printf("%s\n", file);
+}
+
+int ls_dir(char *file)
+{
+  DIR *d = opendir(file);
+  struct dirent *dir;
+
+  if(d == NULL) 
+    printf("couldn't open the directory.\n");
+  
+  while((dir = readdir(d)) != NULL)
+  {
+    ls_file(dir->d_name);
+  }
+  closedir(d);
 }
 int lcd(char filename[])
 {
-	
+	if(chdir(filename))
+  {
+    printf("changed cwd to %s", filename);
+  }
 }
 
 // TODO: Keon's
@@ -75,9 +162,13 @@ int lrmdir(char filename[])
 {
 	
 }
+
 int lrm(char filename[])
 {
-  	
+  if(unlink(filename) == 0)
+  {
+    printf("removed %s successfully!\n", filename);
+  }
 }
 
 int readMessage(char *msg)

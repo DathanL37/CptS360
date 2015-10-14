@@ -184,6 +184,7 @@ int myLs(char pathname[])
 
 int ls_file(char *file)
 {
+  printf("LSing %s\n", file);
   struct stat fstat, *sp;
   int k, i;
   char ftime[64];
@@ -191,7 +192,7 @@ int ls_file(char *file)
   sp = &fstat;
   if((k = lstat(file, &fstat)) < 0)
   {
-    sendMessage("ERROR: can't stat file.\n");
+    sendMessage("ERROR: can't stat %s\n", file);
     return 0;
   }
   
@@ -241,7 +242,10 @@ int ls_dir(char *file)
 
 int myCd(char *pathname)
 {
-  sendMessage("CDing to %s\n", pathname);
+  if (chdir(pathname))
+  {
+    sendMessage("ERROR: couldn't change directory\n");
+  }
 }
 
 // TODO: Keon's
@@ -249,7 +253,7 @@ int myMkdir(char *pathname)
 {
   if(mkdir(pathname, 777) == 0)
   {
-    sendMessage("created successfully!");
+    sendMessage("created successfully!\n");
   }
 }
 
@@ -258,7 +262,7 @@ int myRmdir(char *pathname)
 {
   if(rmdir(pathname) == 0)
   {
-    sendMessage("removed dir successfully!");
+    sendMessage("removed dir successfully!\n");
   }
 }
 
@@ -266,7 +270,7 @@ int myRm(char *pathname)
 {
   if(unlink(pathname) == 0)
   {
-    sendMessage("removed file successfully!");
+    sendMessage("removed %s successfully!\n", pathname);
   }
 }
 

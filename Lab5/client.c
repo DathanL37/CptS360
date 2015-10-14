@@ -36,18 +36,46 @@ int processCommand(char line[])
   char copy[128];
   strcpy(copy, line);
   char *t = strtok(copy, " ");
-  char cmd[64];
-  strcpy(cmd, t);
-
-  if (line[0] == 'l' && strcmp(cmd, "ls"))
+  char command[64];
+  strcpy(command, t);
+  
+  if (line[0] == 'l' && strcmp(command, "ls"))
   { // local command
-    char *token = strtok(line, " ");
-    char  command[64], path[64];
+    t = strtok(NULL, " ");
+    char path[64];
+    if (t != NULL)
+    {
+      strcpy(path, t);
+    }
 
-    // get command and path from line
-    strcpy(command, token);
-    token = strtok(NULL, " ");
-    strcpy(path, token);
+    if (strcmp(command, "lls") == 0)
+    {
+      lls(path);
+    }
+    else if (strcmp(command, "lmkdir") == 0)
+    {
+      lmkdir(path);
+    }
+    else if (strcmp(command, "lrmdir") == 0)
+    {
+      lrmdir(path);
+    }
+    else if (strcmp(command, "lrm") == 0)
+    {
+      lrm(path);
+    }
+    else if (strcmp(command, "lpwd") == 0)
+    {
+      lpwd();
+    }
+    else if (strcmp(command, "lcat") == 0)
+    {
+      lcat(path);
+    }
+    else if (strcmp(command, "lcd") == 0)
+    {
+      lcd(path);
+    }
   }
   else
   { // server command

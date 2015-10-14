@@ -4,7 +4,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <unistd.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <time.h>
+#include <sys/stat.h>
+#include <dirent.h>
 #include <sys/socket.h>
 #include <netdb.h>
 
@@ -19,7 +24,7 @@ int SERVER_IP, SERVER_PORT;
 
 int clientInit(char *argv[]);
 int lcat(char filename[]);
-int lpwd(char filename[]);
+int lpwd();
 int lls(char filename[]);
 int lcd(char filename[]);
 int lmkdir(char filename[]);
