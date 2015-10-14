@@ -244,6 +244,8 @@ int myMkdir(char *pathname)
     sendMessage("created successfully!");
     sendMessage("");
   }
+  sendMessage("%s", EOS);
+  return 0;
 }
 
 // TODO: Keon's
@@ -254,6 +256,7 @@ int myRmdir(char *pathname)
     sendMessage("removed dir successfully!");
     sendMessage("");
   }
+  sendMessage("%s",EOS);
 }
 
 int myRm(char *pathname)
@@ -268,11 +271,28 @@ int myRm(char *pathname)
 // TODO: Keon's
 int myGet(char *pathname)
 {
-
+  FILE *file = fopen(pathname,"r");
+  char *buffer = (char*)malloc(sizeof(char)*MAX);
+  
+  if(file == 0)
+    return 0;
+  while(fread(buffer, 1, MAX, file) >= MAX)
+    {
+      sendMessage("%s", buffer);
+    }
+  sendMessage("%s", EOS);
+  return 0;
 }
 
-// TODO: Keon's
-int myPut(char *pathname)
+int sendMesage(const char *line, ...)
 {
+  char message[MAX];
+  va_list args;
 
+  va_start(args,line);
+
+  n=write(sock,message,MAX);
+  printf("sent: %s\n", message);
+
+  va_end(args);
 }
