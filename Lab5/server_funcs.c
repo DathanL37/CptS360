@@ -182,46 +182,45 @@ int myLs(char pathname[])
       ls_file(name);
 }
 
-int ls_file(char *file)
+int ls_file(char *file, char *name)
 {
-  printf("LSing %s\n", file);
-  struct stat fstat, *sp;
+  struct stat sp;
   int k, i;
   char ftime[64];
 
-  sp = &fstat;
-  if((k = lstat(file, &fstat)) < 0)
+  //sp = &fstat;
+  if((k = lstat(file, &sp)) < 0)
   {
     sendMessage("ERROR: can't stat %s\n", file);
     return 0;
   }
   
-  if ((sp->st_mode & 0xF000) == 0x8000)
+  if ((sp.st_mode & 0xF000) == 0x8000)
     sendMessage("-");
-  if ((sp->st_mode & 0xF000) == 0x4000)
+  if ((sp.st_mode & 0xF000) == 0x4000)
     sendMessage("d");
-  if ((sp->st_mode & 0xF000) == 0xA000)
+  if ((sp.st_mode & 0xF000) == 0xA000)
     sendMessage("l");
 
   for (i=8; i >= 0; i--){
-    if (sp->st_mode & (1 << i))
+    if (sp.st_mode & (1 << i))
       sendMessage("%c", t1[i]);
     else
       sendMessage("%c", t2[i]);
   }
 
-  sendMessage("%4d ",sp->st_nlink);
-  sendMessage("%4d ",sp->st_gid);
-  sendMessage("%4d ",sp->st_uid);
-  sendMessage("%8d ",sp->st_size);
+  sendMessage("%4d ",sp.st_nlink);
+  sendMessage("%4d ",sp.st_gid);
+  sendMessage("%4d ",sp.st_uid);
+  sendMessage("%8d ",sp.st_size);
 
   // print time
-  strcpy(ftime, ctime(&sp->st_ctime));
+  strcpy(ftime, ctime(&sp.st_ctime));
   ftime[strlen(ftime)-1] = 0;
   sendMessage("%s ",ftime);
 
   // print name
-  sendMessage("%s\n", file);
+  sendMessage("%s\n", name);
 }
 
 int ls_dir(char *file)
@@ -234,7 +233,9 @@ int ls_dir(char *file)
   
   while((dir = readdir(d)) != NULL)
   {
-    ls_file(dir->d_name);
+    char absolute[128];
+    sprintf(absolute, "%s/%s", file, dir->d_name);
+    ls_file(absolute, dir->d_name);
   }
   closedir(d);
 

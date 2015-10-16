@@ -64,6 +64,7 @@ int lpwd()
 }
 int lls(char pathname[])
 {
+  printf("%s\n", pathname);
   struct stat mystat, *sp;
   int k;
   char name[1024], cwd[128];
@@ -87,46 +88,45 @@ int lls(char pathname[])
       ls_file(name);
 }
 
-int ls_file(char *file)
+int ls_file(char *file, char *name)
 {
-  printf("LSing %s\n", file);
-  struct stat fstat, *sp;
+  struct stat sp;
   int k, i;
   char ftime[64];
 
-  sp = &fstat;
-  if((k = lstat(file, &fstat)) < 0)
+  //sp = &fstat;
+  if((k = lstat(file, &sp)) < 0)
   {
     printf("ERROR: can't stat %s\n", file);
     return 0;
   }
   
-  if ((sp->st_mode & 0xF000) == 0x8000)
+  if ((sp.st_mode & 0xF000) == 0x8000)
     printf("-");
-  if ((sp->st_mode & 0xF000) == 0x4000)
+  if ((sp.st_mode & 0xF000) == 0x4000)
     printf("d");
-  if ((sp->st_mode & 0xF000) == 0xA000)
+  if ((sp.st_mode & 0xF000) == 0xA000)
     printf("l");
 
   for (i=8; i >= 0; i--){
-    if (sp->st_mode & (1 << i))
+    if (sp.st_mode & (1 << i))
       printf("%c", t1[i]);
     else
       printf("%c", t2[i]);
   }
 
-  printf("%4d ",sp->st_nlink);
-  printf("%4d ",sp->st_gid);
-  printf("%4d ",sp->st_uid);
-  printf("%8d ",sp->st_size);
+  printf("%4d ",sp.st_nlink);
+  printf("%4d ",sp.st_gid);
+  printf("%4d ",sp.st_uid);
+  printf("%8d ",sp.st_size);
 
   // print time
-  strcpy(ftime, ctime(&sp->st_ctime));
+  strcpy(ftime, ctime(&sp.st_ctime));
   ftime[strlen(ftime)-1] = 0;
   printf("%s ",ftime);
 
   // print name
-  printf("%s\n", file);
+  printf("%s\n", name);
 }
 
 int ls_dir(char *file)
@@ -135,13 +135,16 @@ int ls_dir(char *file)
   struct dirent *dir;
 
   if(d == NULL) 
-    printf("couldn't open the directory.\n");
+    sendMessage("couldn't open the directory.\n");
   
   while((dir = readdir(d)) != NULL)
   {
-    ls_file(dir->d_name);
+    char absolute[128];
+    sprintf(absolute, "%s/%s", file, dir->d_name);
+    ls_file(absolute, dir->d_name);
   }
   closedir(d);
+
 }
 int lcd(char filename[])
 {
@@ -154,13 +157,19 @@ int lcd(char filename[])
 // TODO: Keon's
 int lmkdir(char filename[])
 {
-	
+	if(mkdir(filename, 777) == 0)
+  {
+    printf("created successfully!\n");
+  }
 }
 
 // TODO: Keon's
 int lrmdir(char filename[])
 {
-	
+	if(rmdir(filename) == 0)
+  {
+    printf("removed dir successfully!\n");
+  }
 }
 
 int lrm(char filename[])
@@ -171,20 +180,39 @@ int lrm(char filename[])
   }
 }
 
+int myPut(char filename[])
+{
+
+}
+
+int myGet(char filename[])
+{
+  
+}
+
+int sendMessage(const char *line, ...)
+{
+  char message[MAX];
+  va_list args;
+  // init args with number of arguments
+  va_start(args, line);
+  vsprintf(message, line, args);
+
+  // send the echo line to client 
+  n = write(sock, message, MAX);
+  // DEBUG:
+  printf("sent: %s\n", message);
+
+  va_end(args);
+}
+
 int readMessage(char *msg)
 {
-	// keep reading line from server until EOS is received
+  // keep reading line from server until EOS is received
   n = read(sock, msg, MAX);
   while(strcmp(msg, EOS))
   {
     printf("%s", msg);
     n = read(sock, msg, MAX);
   }
-}
-
-int sendMessage(char msg[])
-{
-	// Send ENTIRE line to server
-  n = write(sock, msg, MAX);
-  printf("sent: %s\n", msg);
 }

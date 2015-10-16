@@ -12,6 +12,7 @@
 #include <dirent.h>
 #include <sys/socket.h>
 #include <netdb.h>
+#include <stdarg.h>
 
 #define MAX 256
 
@@ -31,6 +32,6 @@ int lmkdir(char filename[]);
 int lrmdir(char filename[]);
 int lrm(char filename[]);
 int readMessage(char *msg);
-int sendMessage(char msg[]);
+int sendMessage(const char *msg, ...);
 
 #endif

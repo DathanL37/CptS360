@@ -35,51 +35,48 @@ int processCommand(char line[])
 {
   char copy[128];
   strcpy(copy, line);
-  char *t = strtok(copy, " ");
-  char command[64];
-  strcpy(command, t);
-  
-  if (line[0] == 'l' && strcmp(command, "ls"))
-  { // local command
-    t = strtok(NULL, " ");
-    char path[64];
-    if (t != NULL)
-    {
-      strcpy(path, t);
-    }
+  char command[64], path[64];
+  sscanf(line, "%s %s", command, path);
 
-    if (strcmp(command, "lls") == 0)
-    {
-      lls(path);
-    }
-    else if (strcmp(command, "lmkdir") == 0)
-    {
-      lmkdir(path);
-    }
-    else if (strcmp(command, "lrmdir") == 0)
-    {
-      lrmdir(path);
-    }
-    else if (strcmp(command, "lrm") == 0)
-    {
-      lrm(path);
-    }
-    else if (strcmp(command, "lpwd") == 0)
-    {
-      lpwd();
-    }
-    else if (strcmp(command, "lcat") == 0)
-    {
-      lcat(path);
-    }
-    else if (strcmp(command, "lcd") == 0)
-    {
-      lcd(path);
-    }
+  if (strcmp(command, "lls") == 0)
+  {
+    lls(path);
+  }
+  else if (strcmp(command, "lmkdir") == 0)
+  {
+    lmkdir(path);
+  }
+  else if (strcmp(command, "lrmdir") == 0)
+  {
+    lrmdir(path);
+  }
+  else if (strcmp(command, "lrm") == 0)
+  {
+    lrm(path);
+  }
+  else if (strcmp(command, "lpwd") == 0)
+  {
+    lpwd();
+  }
+  else if (strcmp(command, "lcat") == 0)
+  {
+    lcat(path);
+  }
+  else if (strcmp(command, "lcd") == 0)
+  {
+    lcd(path);
+  }
+  else if (strcmp(command, "put") == 0)
+  {
+    myPut(path);
+  }
+  else if (strcmp(command, "get") == 0)
+  {
+    myGet(path);
   }
   else
   { // server command
-    sendMessage(line);
+    sendMessage("%s", line);
     readMessage(line);
   }
 }
