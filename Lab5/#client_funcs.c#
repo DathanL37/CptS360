@@ -53,10 +53,10 @@ int lcat(char filename[])
   long fileSize = ftell(file);
   char *buffer = (char*) malloc(sizeof(char)*fileSize);
   
-  buffer = (char*)fread(buffer, 1, fileSize,file);
-  printf("%s",buffer);
-  printf("\n");
-  
+  while(buffer = (char*)fread(b
+      printf("%s",buffer);
+      printf("\n");
+    }
   fclose(file);
   free(buffer);
   return 0;

@@ -47,10 +47,10 @@ int processCommand(char command[])
   {
     myGet(path);
   }
-  else if (strcmp(cmd, "put") == 0)
+  /*  else if (strcmp(cmd, "put") == 0)
   {
     myPut(path);
-  }
+    }*/
   else if (strcmp(cmd, "pwd") == 0)
   {
     myPwd();
@@ -100,8 +100,8 @@ int serverInit(char *name)
       exit(1);
    }
 
-   printf("    hostname=%s  IP=%d\n",
-               hp->h_name,  inet_ntoa(*(long *)hp->h_addr));
+   printf("    hostname=%s  IP=%s\n",
+               hp->h_name,  inet_ntoa(hp->h_addr));
   
    //  create a TCP socket by socket() syscall
    printf("2 : create a socket\n");
@@ -150,7 +150,7 @@ int myPwd()
   getcwd(cwd, 128);
 
   sendMessage("%s\n", cwd);
-  sendMessage(EOS);
+  sendMessage("%s",EOS);
 }
 
 int myLs(char *pathname)
@@ -233,7 +233,7 @@ int ls_dir(char *file)
 int myCd(char *pathname)
 {
   sendMessage("CDing to %s\n", pathname);
-  sendMessage(EOS);
+  sendMessage("%s",EOS);
 }
 
 // TODO: Keon's
@@ -284,6 +284,10 @@ int myGet(char *pathname)
   return 0;
 }
 
+/*int myPut(char *pathname)
+{
+
+}*/
 int sendMesage(const char *line, ...)
 {
   char message[MAX];

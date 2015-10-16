@@ -26,6 +26,6 @@ int lmkdir(char filename[]);
 int lrmdir(char filename[]);
 int lrm(char filename[]);
 int readMessage(char *msg);
-int sendMessage(char msg[]);
+int sendMessage(char msg[],...);
 
 #endif

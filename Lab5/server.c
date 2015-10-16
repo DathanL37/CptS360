@@ -31,7 +31,7 @@ main(int argc, char *argv[])
     }
     printf("server: accepted a client connection from\n");
     printf("-----------------------------------------------\n");
-    printf("        IP=%d  port=%d\n", inet_ntoa(client_addr.sin_addr.s_addr), ntohs(client_addr.sin_port));
+    printf("        IP=%s  port=%s\n", inet_ntoa(client_addr.sin_addr.s_addr), ntohs(client_addr.sin_port));
     printf("-----------------------------------------------\n");
     
     readMessage(line);

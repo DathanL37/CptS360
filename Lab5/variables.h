@@ -41,7 +41,6 @@ int myMkdir(char *pathname);
 int myRmdir(char *pathname);
 int myRm(char *pathname);
 int myGet(char *pathname);
-int myPut(char *pathname);
 int processCommand(char command[]);
 
 #endif
