@@ -278,11 +278,35 @@ int myRm(char *pathname)
 // TODO: Keon's
 int myGet(char *pathname)
 {
-
+  FILE *file = fopen(pathname,"r");
+  char *buffer = (char*)malloc(sizeof(char)*MAX);
+  
+  if(file == 0)
+    return 0;
+  while(fread(buffer, 1, MAX, file) >= MAX)
+    {
+      sendMessage("%s", buffer);
+    }
+  sendMessage("%s", EOS);
+  return 0;
 }
 
 // TODO: Keon's
 int myPut(char *pathname)
 {
+  FILE *file = fopen(pathname, "w+");
 
+  pathname = 0;
+  while(1)
+  {
+    n = read(newsock, pathname, MAX);
+    if (n==0)
+    {
+      printf("server: client died, server loops\n");
+      close(newsock);
+      break;
+    }
+
+    fprintf(file,"%s", pathname);
+  }
 }

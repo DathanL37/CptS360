@@ -51,7 +51,17 @@ int clientInit(char *argv[])
 // TODO: Keon's
 int lcat(char filename[])
 {
-	
+	FILE *file = fopen(filename,"r");
+  long fileSize = ftell(file);
+  char *buffer = (char*)malloc(sizeof(char)*fileSize);
+  
+  fread(buffer, 1, fileSize,file);
+  printf("%s",buffer);
+  printf("\n");
+  
+  fclose(file);
+  free(buffer);
+  return 0;
 }
 
 int lpwd()
@@ -76,7 +86,7 @@ int lls(char pathname[])
   }
 
   sp = &mystat;
-  if (k = lstat(pathname, sp) < 0){
+  if (k = lstat(pathname, &mystat) < 0){
      printf("no file found.\n");
      return 0;
   }
@@ -180,14 +190,42 @@ int lrm(char filename[])
   }
 }
 
-int myPut(char filename[])
+int myPut(char pathname[])
 {
+  sendMessage("put %s", pathname);
+  FILE *file = fopen(pathname, "r");
+  char *buffer = (char*)malloc(sizeof(char)*MAX);
 
+  if(file==0)
+    return 0;
+  while(fread(buffer, 1, MAX, file) >= MAX)
+    {
+      sendMessage("%s",buffer);
+    }
+  sendMessage("%s",EOS);
+  return 0;
 }
 
 int myGet(char filename[])
 {
+  sendMessage("%s", filename);
+
+  char f[64];
+  char *token = strtok(filename, " ");
+  token = strtok(NULL, " ");
+  strcpy(f, token);
+
+  FILE *file = fopen(f, "w+");
   
+  n = read(sock, token, MAX);
+  while(strcmp(token, EOS))
+  {
+    fprintf(file, "%s", token);
+    n = read(sock, token, MAX);
+  }
+
+  fclose(file);
+  free(file);
 }
 
 int sendMessage(const char *line, ...)

@@ -72,7 +72,7 @@ int processCommand(char line[])
   }
   else if (strcmp(command, "get") == 0)
   {
-    myGet(path);
+    myGet(line);
   }
   else
   { // server command

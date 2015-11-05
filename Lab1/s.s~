@@ -11,7 +11,6 @@ main:
         pushl $FMT
 
         call  myprintf
-        #addl  $12, %esp
 #---------------------------------------------------------
 
 
@@ -21,12 +20,11 @@ main:
 #      HELP: When crt0.o calls main(int argc, char *argv[], char *env[]), 
 #            it passes argc, argv, env to main(). 
 #            Draw a diagram to see where are argc, argv, env?
-	#pushl 16(%ebp) # Push env
-	#pushl 12(%ebp) # Push argv
-	#pushl 8(%ebp) # Push argc
-
-	#call mymain
-	#addl  $12, %esp
+	pushl 16(%ebp) # Push env
+	pushl 12(%ebp) # Push argv
+	pushl 8(%ebp) # Push argc
+	#pop %ebp
+	call mymain
 
 # (3). Write code to call myprintf(fmt,a,b)	
 #      HELP: same as in (1) above
