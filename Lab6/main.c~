@@ -26,7 +26,7 @@ int find_file(char *path[])
 
 			if((S_ISDIR(ip->i_mode) && path[i] == NULL) || (S_ISREG(ip->i_mode) && path[i] != NULL))
 			{
-				printf("\nERROR: not a working path\n");
+				printf("not a working path\n");
 				return 0;
 			}
 		}
