@@ -92,7 +92,8 @@ int print_dir(DIR *dir)
 
 int printInode(INODE *ip)
 {
-	int i = 0;
+	int i = 0, num_blocks;
+	char buf2[BLKSIZE];
 	
 	printf("\n----- INODE CONTENTS -----\n");
 	printf("inode->i_mode:\t%d\n", ip->i_mode);
@@ -104,12 +105,91 @@ int printInode(INODE *ip)
 	printf("inode->i_dtime:\t%d\n", ip->i_dtime);
 	printf("inode->i_gid:\t%d\n", ip->i_gid);
 	printf("inode->i_links_count:\t%d\n", ip->i_links_count);
-	printf("***** Direct Blocks *****\n");
-	for(i; i < 15; i++)
-	{
-			printf("i_block[%d] = %d\n", i, ip->i_block[i]);
-	}
-	printf("----- INODE CONTENTS -----\n");
+	printf("Number of blocks:\t%d\n", (num_blocks = ip->i_size / BLKSIZE + 1));
+	getchar();
+	printf("\n*********Disk Blocks**********\n");
+    for(i = 0; i < 15; i++)
+    {
+        if(ip->i_block[i] != 0)
+        {
+            printf("i_block[%d] = %d\n", i, ip->i_block[i]);
+        }
+    }
+
+    printf("\n-------------Direct Blocks------------\n");
+    for(i = 0; i < 12; i++)
+    {
+        if(ip->i_block[i])
+        {
+        	num_blocks--;
+            if(i == 6)
+            {
+                printf("\n");
+            }
+            printf("%d ", ip->i_block[i]);
+        }
+    }
+    printf("Number of blocks remaining:\t%d\n", num_blocks);
+    if(ip->i_block[12] && num_blocks > 0)
+    {
+        printf("\n--------------Indirect Blocks--------------\n");
+        //Print indirect blocks 
+        get_block(fd, ip->i_block[12], buf2);
+        int *indirect = (int *)buf2;
+        for(i = 0; i < 256; i++)
+        {
+            if(indirect[i])
+            {
+            	num_blocks--;
+                if(i%10 == 0)
+                {
+                    printf("\n");
+                }
+                printf("%d ", indirect[i]);
+            }
+        }
+    }
+
+    
+    printf("Number of blocks remaining:\t%d\n", num_blocks);
+    getchar();
+    if(ip->i_block[13] && num_blocks > 0)
+    {
+        printf("\n--------------Double Indirect Blocks---------------\n");
+        int j = 0, remaining = 0;
+        int buf3[256], buf4[256];
+        int *dbl_indirect;
+
+        get_block(fd, ip->i_block[13], buf3);
+        printf("13: %d\n", ip->i_block[13]);
+
+        for (i = 0; i < 256; i++)
+			{
+				if (buf3[i] == 0) break;
+
+				if (i%10 == 0)putchar('\n');
+
+				printf("\t%d: \n", buf3[i]);
+				get_block(fd, buf3[i], buf4);
+				//dbl_indirect = (int *)buf4;
+
+				for (j = 0; j < 256; j++)
+				{
+					if (buf4[j])
+					{
+						//num_blocks--;
+						printf("%d ", buf4[j]);
+						if (j%10 == 0)
+							printf("\n");
+					}
+					else{
+					break;}
+				}
+				printf("Number of blocks remaining: %d\n", num_blocks);
+				getchar();
+			}
+    }
+	printf("\n\n----- INODE CONTENTS -----\n");
 }
 
 int split_path(char *PATH[], char *path)
